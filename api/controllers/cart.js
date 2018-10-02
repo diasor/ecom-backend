@@ -1,96 +1,47 @@
 const { Cart } = require('../../models/cart');
-const { Product } = require('../../models/product');
-const { each, isEmpty } = require('lodash');
-const { findManyProducts } = require('./product');
-const { buildProduct } = require('../../dao/product');
-const { buildFullCart } = require('../../dao/cartDao');
+const { getCart, insertUpdateItem, removeItem } = require('../../dao/cartDao');
 
+/******************************************************
+  Cart's cartController:
+    This controller provides de apis for retrieving,
+    creating and updating a shopping cart.
+******************************************************/
 const cartController = {
   get (req, res) {
+    // this method searches if the user has a cart and returns it. If not, then creates one
     const getFullCart = req.params.getFullCart;
-    // Searches if the user has a cart and returns it. If not, then creates one.
-    Cart.findOneAndUpdate({}, { expire: new Date()}, { upsert: true, new: true, setDefaultsOnInsert: true },
-    (error, cart) => {
-      if (error) {
-        res.status(500).json({ message: `Failed to create a cart! => ${error}` });
-      }
-      if (getFullCart === 'true') {
-        buildFullCart(cart, (errorMessage, fullCart) => {
-          if (errorMessage) {
-            console.log(`Failed to load a full cart! => ${errorMessage}`);
-            res.status(500).json({ message: `Failed to load a full cart! => ${errorMessage}` });
-          } else {
-            res.json(fullCart);
-          }
-        });
-      } else res.json(cart);
+    getCart(getFullCart, (error, fullCart) => {
+      if (error) res.status(500).json({ message: error });
+      res.json(fullCart);
     });
   },
+
   createUpdateItem (req, res) {
-    const idCart = req.params.id;
+    // this methods creates or updates a cart by adding a new item or changing its amount
+    const cartId = req.params.id;
     const productId = req.body.productId;
     const productAmount = req.body.amount;
     let responseSent = false;
-    let productItem = {product_id: productId, amount: productAmount};
-    Cart.findOneAndUpdate(
-      { _id: idCart, 'items.product_id': productId },
-      { $set: { 'items.$.amount' : productAmount } },
-      { new: true },
-      (error, cartDocument) => {
-        if (error) {
-          console.log(`Failed to update the item in the cart! => ${error}`);
-          res.status(500).json({ message: `Failed to update the item in the cart! => ${error}` });
-        }
-        if (isEmpty(cartDocument)) {
-          Cart.findOneAndUpdate(
-            { _id: idCart },
-            { $push: {items: productItem} },
-            { new: true },
-            (error, cartDocument) => {
-              if (error) {
-                responseSent = true;
-                console.log(`Failed to push a new item in the cart! => ${error}`);
-                res.status(500).json({ message: `Failed to push a new item in the cart! => ${error}` });
-              } else if (isEmpty(cartDocument)) {
-                responseSent = true;
-                console.log(`Failed to push a new item in the cart! => ${error}`);
-                res.status(500).json({ message: `Failed to push a new item in the cart! => ${error}` });
-              } else {
-                responseSent = true;
-                res.json(cartDocument);
-              }
-            });
-        } else if (!responseSent) {
-            res.json(cartDocument);
-          }
-      });
+    insertUpdateItem(cartId, productId, productAmount, (error, fullCart) => {
+      if (error) {
+        res.status(500).json({ message: error });
+      }
+      res.json(fullCart);
+    });
   },
+
   removeItem (req, res) {
+    // this method removes an item from thee cart
     const cartId = req.body.cartId;
     const productId = req.body.productId;
     const getFullCart = req.body.getFullCart;
-    Cart.findOneAndUpdate(
-      { _id: cartId },
-      { $pull: {items: { product_id: productId } } },
-      { new: true },
-      (error, cart) => {
-        if (error) {
-          res.status(500).json({ message: `Failed to delete the item from the cart! => ${error}` });
-        }
-        if ((cart.items.length == 0) || (getFullCart === 'false')) {
-          res.json(cart);
-        } else {
-          buildFullCart(cart, (errorMessage, fullCart) => {
-            if (errorMessage) {
-              console.log(`Failed to load a full cart! => ${errorMessage}`);
-              res.status(500).json({ message: `Failed to load a full cart! => ${errorMessage}` });
-            } else {
-              res.json(fullCart);
-            }
-          });
-        }
+    removeItem(cartId, productId, getFullCart, (error, fullCart) => {
+      if (error) {
+        res.status(500).json({ message: error });
+      }
+      res.json(fullCart);
     });
   },
 };
 
-module.exports = cartController;
+module.exports = { cartController };

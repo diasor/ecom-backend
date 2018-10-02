@@ -15,7 +15,7 @@ require('dotenv').config();
 mongoose.Promise = global.Promise;
 mongoose.set('useFindAndModify', false);
 mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_URL}`, { useNewUrlParser: true });
-// mongodb://<dbuser>:<dbpassword>@ds020228.mlab.com:20228/eshop
+
 // CORS setup
 app.all('/*', (req, res, next) => {
   // CORS headers

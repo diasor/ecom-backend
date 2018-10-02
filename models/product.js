@@ -9,10 +9,23 @@ const Schema = mongoose.Schema,
   *****************************************/
 const productSchema = Schema({
   id: ObjectId,
-  name: String,
-  price: Number,
-  description: String,
-  imageName: String,
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  description: {
+    type: String,
+    trim: true,
+  },
+  imageName: {
+    type: String,
+    tim: true,
+  },
   // One to many relationship
   manufacturer: {type: ObjectId, ref: 'Manufacturer'}
 });

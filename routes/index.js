@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-const productController = require('../api/controllers/product.js');
-const manufacturerController = require('../api/controllers/manufacturer.js');
-const cartController = require('../api/controllers/cart.js');
+const { productController } = require('../api/controllers/product.js');
+const { manufacturerController } = require('../api/controllers/manufacturer.js');
+const { cartController } = require('../api/controllers/cart.js');
 
 // manufacturers
 router.get('/manufacturers', manufacturerController.all);

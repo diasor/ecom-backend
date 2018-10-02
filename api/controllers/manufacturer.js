@@ -1,42 +1,51 @@
 const { Manufacturer } = require('../../models/manufacturer');
+const { getAll, manufacturerById, createManufacturer, updateManufacturer, removeManufacturer } = require('../../dao/manufacturerDao');
 
+/******************************************************
+  Manufacturer's cartController:
+    This controller provides de apis for retrieving,
+    creating, updating and deleting a manufacturer.
+******************************************************/
 const manufacturerController = {
   all (req, res) {
-    // Returns all manufacturers
-    Manufacturer.find({})
-      .exec((err, manufacturers) => res.json(manufacturers))
-  },
-  byId (req, res) {
-    const idParam = req.params.id;
-    // Returns a single product based on the passed in ID parameter
-    Manufacturer.findOne({_id: idParam})
-      .then(manufacturer => res.json(manufacturer))
-      .catch(err => console.log('Error getting manufacturer ', req.params.id));
-  },
-  create (req, res) {
-    const requestBody = req.body;
-    // Creates a new record from a submitted form
-    const newManufacturer = new Manufacturer(requestBody);
-    newManufacturer.save()
-      .then(saved => res.json(saved))
-      .catch(err => console.log('Error creating manufacturer ', req.body.name));
-  },
-  update (req, res) {
-    const idParam = req.params.id;
-    Manufacturer.findById({_id: idParam}, (err, manufacturerDocument) => {
-      // updates the manufacturer payload
-      manufacturerDocument.name = req.body.name;
-      manufacturerDocument.save()
-      .then(saved => res.json(saved))
-      .catch(err => console.log('Error updating manufacturer ', req.body.name));
+    // this method returns all manufacturers
+    getAll( (error, manufacturers) => {
+      if (error) res.status(500).json({ message: error });
+      res.json(manufacturers);
     });
   },
+
+  byId (req, res) {
+    // returns a single manufacturer identified by the parameter id
+    manufacturerById(req.params.id, (error, manufacturerDocument) => {
+      if (error) res.status(500).json({ message: error });
+      res.json(manufacturerDocument);
+    });
+  },
+
+  create (req, res) {
+    // creates a new record from a submitted form
+    createManufacturer(req.body.name, (error, manufacturerDocument) => {
+      if (error) res.status(500).json({ message: error });
+      res.json(manufacturerDocument);
+    });
+  },
+
+  update (req, res) {
+    // updates the manufacturer's information
+    updateManufacturer(req.params.id, req.body.name, (error, manufacturerDocument) => {
+      if (error) res.status(500).json({ message: error });
+      res.json(manufacturerDocument);
+    });
+  },
+
   remove (req, res) {
-    const idParam = req.params.id;
-    Manufacturer.deleteOne({_id: idParam})
-      .then(() => res.json("OK"))
-      .catch(err => console.log('Error removing manufacturer ', idParam));
+    // deletes one manufacturer
+    removeManufacturer(req.params.id, (error, result) => {
+      if (error) res.status(500).json({ message: error });
+      res.json(result);
+    });
   } ,
 };
 
-module.exports = manufacturerController;
+module.exports = { manufacturerController };

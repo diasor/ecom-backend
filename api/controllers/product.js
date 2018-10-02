@@ -5,9 +5,11 @@ const { Product } = require('../../models/product');
 const { Manufacturer } = require('../../models/manufacturer');
 const { buildProduct, deleteImage, getImagePath } = require('../../dao/product');
 
-/****************************************
-          Product Controller
-*****************************************/
+/******************************************************
+  Product's cartController:
+    This controller provides de apis for retrieving,
+    creating and updating a shopping cart.
+******************************************************/
 const productController = {
   all (req, res) {
     // Returns all products
@@ -22,6 +24,7 @@ const productController = {
         res.json(productsResults);
       })
   },
+
   byId (req, res) {
     const idParam = req.params.id;
     // Returns a single product based on the passed in ID parameter
@@ -31,6 +34,7 @@ const productController = {
       .populate('manufacturer')
       .exec((err, product) => res.json(product));
   },
+
   createUpdate (req, res) {
     // Creates a new record from a submitted form
     let form = new IncomingForm();
@@ -88,6 +92,7 @@ const productController = {
       console.log('error ', JSON.stringify(err));
     });
   },
+
   remove (req, res) {
     const idParam = req.params.id;
     // Removes a product
@@ -108,16 +113,13 @@ const productController = {
   },
 
   findManyProducts (idCollection) {
-    console.log('IN findManyProducts ', idCollection);
     Product.find({_id: { $in: idCollection } },
       (error, productList) => {
         if (error) {
-          console.log('error in findManyProducts ', error);
           return {};
         }
-        console.log(productList);
         return productList;
       });
   },
 };
-module.exports = productController;
+module.exports = { productController };

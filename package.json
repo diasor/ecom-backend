@@ -17,5 +17,11 @@
     "morgan": "^1.9.1",
     "path": "^0.12.7",
     "sys": "0.0.1"
+  },
+  "devDependencies": {
+    "expect": "^23.6.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.4",
+    "supertest": "^3.3.0"
   }
 }

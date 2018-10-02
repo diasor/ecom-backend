@@ -15,4 +15,4 @@ const manufacturerSchema = Schema({
 const Manufacturer = model('Manufacturer', manufacturerSchema);
 
 
-module.exports = {Manufacturer};
+module.exports = { Manufacturer };
