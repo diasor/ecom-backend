@@ -1,11 +1,10 @@
 const { Manufacturer } = require('../models/manufacturer');
 
-// ---------------------------------------------------------
-//  Manufacturer's Data Access Object
-//    handles all the necessary database interaction
-//    concerning the manufacturer
-// ---------------------------------------------------------
-
+/******************************************************
+  Manufacturer's Data Access Object:
+    handles all the necessary database interaction
+    concerning the manufacturer.
+******************************************************/
 function getAll(callback) {
   // returns all manufacturers
   getAllManufacturers()

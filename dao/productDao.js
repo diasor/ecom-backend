@@ -1,6 +1,36 @@
-const { isEmpty } = require('lodash');
+const { isEmpty, each } = require('lodash');
 const fs = require('fs');
 const path = require('path');
+const { Product } = require('../models/product');
+
+/******************************************************
+  Product's Data Access Object:
+    handles all the necessary database interaction
+    concerning the products.
+******************************************************/
+function getAll (callback) {
+  // returns all products
+  Product.find({})
+    .populate('manufacturer')
+    .exec((error, products) => {
+      if (error) callback(`Failed to get product. => ${error}. Bad Request.`);
+      productsResults = [];
+      each(products, (item) => {
+        const productItem = buildProduct(item);
+        productsResults.push(productItem);
+      });
+      callback(undefined, productsResults);
+    });
+};
+
+function productById (id, callback) {
+  // returns a single product identified by the parameter id
+  Product.findOne({_id: id}, (error, productDocument) => {
+    if (error) callback(`Failed to get product by id. => ${error}. Bad Request.`);
+    const fullProduct = buildProduct(productDocument);
+    callback(undefined, fullProduct);
+  });
+};
 
 function buildProduct (itemResult) {
   const currentPath = process.cwd();
@@ -27,7 +57,7 @@ function buildProduct (itemResult) {
     }
   }
   return productItem;
-}
+};
 
 function deleteImage (imageName) {
   fs.unlink(imageName, (err) => {
@@ -41,15 +71,17 @@ function deleteImage (imageName) {
       console.log(`removed`);
     }
   });
-}
+};
 
 function getImagePath () {
   const imagePath = process.cwd();
   return `${imagePath}/public/images/productImages/`;
-}
+};
 
 module.exports = {
-  buildProduct,
+  getAll,
+  productById,
   getImagePath,
   deleteImage,
+  buildProduct,
 };

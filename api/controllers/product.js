@@ -3,7 +3,7 @@ const IncomingForm = require('formidable');
 const { isEmpty, each } = require('lodash');
 const { Product } = require('../../models/product');
 const { Manufacturer } = require('../../models/manufacturer');
-const { buildProduct, deleteImage, getImagePath } = require('../../dao/product');
+const { getAll, productById, deleteImage, getImagePath } = require('../../dao/productDao');
 
 /******************************************************
   Product's cartController:
@@ -12,27 +12,23 @@ const { buildProduct, deleteImage, getImagePath } = require('../../dao/product')
 ******************************************************/
 const productController = {
   all (req, res) {
-    // Returns all products
-    Product.find({})
-      .populate('manufacturer')
-      .exec((err, products) => {
-        productsResults = [];
-        each(products, (item) => {
-          productItem = buildProduct(item);
-          productsResults.push(productItem);
-        });
-        res.json(productsResults);
-      })
+    // returns all products
+    getAll((error, products) => {
+      if (error) return res.status(500).json({ message: error });
+      return res.json(products);
+    });
   },
 
   byId (req, res) {
-    const idParam = req.params.id;
-    // Returns a single product based on the passed in ID parameter
-    Product
-      .findOne({_id: idParam})
-      // as well as it's manufacturer
-      .populate('manufacturer')
-      .exec((err, product) => res.json(product));
+    const productId = req.params.id;
+    if (req.params.id === 'undefined') {
+      return res.status(400).json({ message: 'The product Id can not be empty.' });
+    }
+    // returns a single product based on the passed in ID parameter
+    productById(productId, (error, productDocument) => {
+      if (error) return res.status(500).json({ message: error });
+      return res.json(productDocument);
+    });
   },
 
   createUpdate (req, res) {
@@ -108,7 +104,9 @@ const productController = {
         }
       }
     })
-    .then(() => Product.deleteOne({_id: idParam}, (err) => res.json("OK")))
+    .then(() => Product.deleteOne({_id: idParam}, (err) => {
+      return res.json("OK");
+    }))
     .catch(err => console.log('Error removing a product: ', err));
   },
 

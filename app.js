@@ -9,6 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+var port = process.env.PORT || 3030;
 require('dotenv').config();
 
 // Database setup
@@ -58,5 +59,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-app.listen(3030);
+app.listen(port, () => {
+  console.log(`Server started at port ${port}`);
+});
 module.exports = app;

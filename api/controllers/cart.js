@@ -11,8 +11,8 @@ const cartController = {
     // this method searches if the user has a cart and returns it. If not, then creates one
     const getFullCart = req.params.getFullCart;
     getCart(getFullCart, (error, fullCart) => {
-      if (error) res.status(500).json({ message: error });
-      res.json(fullCart);
+      if (error) return res.status(500).json({ message: error });
+      return res.json(fullCart);
     });
   },
 
@@ -23,10 +23,8 @@ const cartController = {
     const productAmount = req.body.amount;
     let responseSent = false;
     insertUpdateItem(cartId, productId, productAmount, (error, fullCart) => {
-      if (error) {
-        res.status(500).json({ message: error });
-      }
-      res.json(fullCart);
+      if (error) return res.status(500).json({ message: error });
+      return res.json(fullCart);
     });
   },
 
@@ -36,10 +34,8 @@ const cartController = {
     const productId = req.body.productId;
     const getFullCart = req.body.getFullCart;
     removeItem(cartId, productId, getFullCart, (error, fullCart) => {
-      if (error) {
-        res.status(500).json({ message: error });
-      }
-      res.json(fullCart);
+      if (error) return res.status(500).json({ message: error });
+      return res.json(fullCart);
     });
   },
 };

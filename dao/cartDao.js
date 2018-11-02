@@ -1,13 +1,13 @@
 const { each, isEmpty } = require('lodash');
 const { Cart } = require('../models/cart');
 const { Product, Types } = require('../models/product');
-const { buildProduct } = require('./product');
+const { buildProduct } = require('./productDao');
 
-// ---------------------------------------------------------
-//  Cart's Data Access Object
-//    handles all the necessary database interaction
-//    concerning the shopping cart
-// ---------------------------------------------------------
+/******************************************************
+  Cart's Data Access Object:
+    handles all the necessary database interaction
+    concerning the shopping cart.
+******************************************************/
 function getCart (getFullCart, callback) {
   findOneAndUpdate({}, { expire: new Date()}, { upsert: true, new: true, setDefaultsOnInsert: true })
     .then(cart => {
