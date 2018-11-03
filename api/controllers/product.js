@@ -12,7 +12,7 @@ const { getAll, getProductById, createProduct, updateProduct, removeProduct, get
 ******************************************************/
 const productController = {
   all (req, res) {
-    // returns all products
+    // this api returns all products
     getAll((error, products) => {
       if (error) return res.status(500).json({ message: error });
       return res.json(products);
@@ -20,10 +20,11 @@ const productController = {
   },
 
   byId (req, res) {
+    // this api returns a single product based on the passed in ID parameter
     const productId = req.params.id;
     if (productId === 'undefined') return res.status(400).json({ message: 'The product Id can not be empty.' });
 
-    // returns a single product based on the passed in ID parameter
+    // product request
     getProductById(productId, (error, productDocument) => {
       if (error) return res.status(500).json({ message: error });
       return res.json(productDocument);
@@ -31,7 +32,7 @@ const productController = {
   },
 
   createUpdate (req, res) {
-    // Creates a new record from a submitted form
+    // this api creates a new record from a submitted form
     let form = new IncomingForm();
     let newFileName = '';
     let idParam = '';
@@ -68,6 +69,7 @@ const productController = {
         });
       }
     });
+    // error controlling
     form.on('error', (error) => {
       console.log('error ', JSON.stringify(error));
       return res.status(500).json({ message: error });
@@ -75,9 +77,12 @@ const productController = {
   },
 
   remove (req, res) {
-    const idParam = req.params.id;
-    // Removes a product
-    removeProduct(idParam, (error, productRemoved) => {
+    // this api removes a product and it's image
+    const productId = req.params.id;
+    if (productId === 'undefined') return res.status(400).json({ message: 'The product Id can not be empty.' });
+
+    // request remove
+    removeProduct(productId, (error, productRemoved) => {
       if (error) return res.status(400).json({ message: error });
       return res.json(productRemoved);
     });

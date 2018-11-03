@@ -7,20 +7,22 @@ const { Manufacturer } = require('../models/manufacturer');
 ******************************************************/
 function getAll(callback) {
   // returns all manufacturers
-  getAllManufacturers()
-    .then(manufacturers => callback(undefined, manufacturers))
-    .catch(error => callback(`Failed to get manufacturers. => ${error}. Bad Request.`));
+  Manufacturer.find({}, (error, manufacturers) => {
+    if (error) return callback(`Failed to get manufacturers:  ${error}.`);
+    return callback(undefined, manufacturers)
+  });
 };
 
 function manufacturerById (id, callback) {
   // returns a single manufacturer identified by the parameter id
   Manufacturer.findOne({_id: id}, (error, manufacturer) => {
-    if (error) callback(`Failed to get manufacturer by id. => ${error}. Bad Request.`);
-    callback(undefined, manufacturer);
+    if (error) return callback(`Failed to get manufacturer by id: ${id}. ERROR: ${error}.`);
+    return callback(undefined, manufacturer);
   });
 };
 
 function createManufacturer (name, callback) {
+  // creates a new manufacturer
   const newManufacturer = new Manufacturer({ name });
   newManufacturer.save()
     .then(saved => callback(undefined, saved))
@@ -42,19 +44,11 @@ function updateManufacturer (id, name, callback) {
 function removeManufacturer (id, callback) {
   // deletes one manufacturer
   Manufacturer.deleteOne({_id: id}, (error) => {
-    if (error) callback(`Error removing manufacturer: ${id}. ERROR: ${error}`);
-    callback(undefined, 'OK');
+    if (error) return callback(`Error removing manufacturer: ${id}. ERROR: ${error}`);
+    return callback(undefined, 'OK');
   });
 };
 
-// Basic Data Access Object operations
-async function getAllManufacturers () {
-  return await Manufacturer.find({});
-};
-
-async function findById (id) {
-  return await Manufacturer.findById({_id: id});
-};
 
 module.exports = {
   getAll,

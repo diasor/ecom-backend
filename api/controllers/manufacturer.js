@@ -9,23 +9,26 @@ const { getAll, manufacturerById, createManufacturer, updateManufacturer, remove
 ******************************************************/
 const manufacturerController = {
   all (req, res) {
-    // this method returns all manufacturers
-    getAll( (error, manufacturers) => {
+    // this api returns all manufacturers
+    getAll((error, manufacturers) => {
       if (error) return res.status(500).json({ message: error });
       return res.json(manufacturers);
     });
   },
 
   byId (req, res) {
-    // returns a single manufacturer identified by the parameter id
-    manufacturerById(req.params.id, (error, manufacturerDocument) => {
-      if (error) return res.status(400).json({ message: error });
+    // this api returns a single manufacturer identified by the parameter id
+    const manufacturerId = req.params.id;
+    if (manufacturerId === 'undefined') return res.status(400).json({ message: 'The manufacturer Id can not be empty.' });
+
+    manufacturerById(manufacturerId, (error, manufacturerDocument) => {
+      if (error) return res.status(500).json({ message: error });
       return res.json(manufacturerDocument);
     });
   },
 
   create (req, res) {
-    // creates a new record from a submitted form
+    // this api creates a new record from a submitted form
     const name = req.body.name;
     if (isEmpty(name)) return res.status(400).json({ message: 'The name of the manufacturer can not be empty.' });
 
@@ -49,10 +52,10 @@ const manufacturerController = {
 
   remove (req, res) {
     // deletes one manufacturer
-    const id = req.params.id;
-    if (isEmpty(id)) return res.status(400).json({ message: 'The id of the manufacturer can not be empty.' });
+    const manufacturerId = req.params.id;
+    if (isEmpty(manufacturerId)) return res.status(400).json({ message: 'The manufacturer Id can not be empty.' });
 
-    removeManufacturer(id, (error, result) => {
+    removeManufacturer(manufacturerId, (error, result) => {
       if (error) return res.status(500).json({ message: error });
       return res.json(result);
     });

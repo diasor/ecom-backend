@@ -132,7 +132,6 @@ function getImagePath () {
   return `${imagePath}/public/images/productImages/`;
 };
 
-
 module.exports = {
   getAll,
   getProductById,
