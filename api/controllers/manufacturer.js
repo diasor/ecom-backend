@@ -1,3 +1,4 @@
+const { isEmpty } = require('lodash');
 const { Manufacturer } = require('../../models/manufacturer');
 const { getAll, manufacturerById, createManufacturer, updateManufacturer, removeManufacturer } = require('../../dao/manufacturerDao');
 
@@ -10,40 +11,50 @@ const manufacturerController = {
   all (req, res) {
     // this method returns all manufacturers
     getAll( (error, manufacturers) => {
-      if (error) res.status(500).json({ message: error });
-      res.json(manufacturers);
+      if (error) return res.status(500).json({ message: error });
+      return res.json(manufacturers);
     });
   },
 
   byId (req, res) {
     // returns a single manufacturer identified by the parameter id
     manufacturerById(req.params.id, (error, manufacturerDocument) => {
-      if (error) res.status(500).json({ message: error });
-      res.json(manufacturerDocument);
+      if (error) return res.status(400).json({ message: error });
+      return res.json(manufacturerDocument);
     });
   },
 
   create (req, res) {
     // creates a new record from a submitted form
-    createManufacturer(req.body.name, (error, manufacturerDocument) => {
-      if (error) res.status(500).json({ message: error });
-      res.json(manufacturerDocument);
+    const name = req.body.name;
+    if (isEmpty(name)) return res.status(400).json({ message: 'The name of the manufacturer can not be empty.' });
+
+    createManufacturer(name, (error, manufacturerDocument) => {
+      if (error) return res.status(500).json({ message: error });
+      return res.json(manufacturerDocument);
     });
   },
 
   update (req, res) {
     // updates the manufacturer's information
-    updateManufacturer(req.params.id, req.body.name, (error, manufacturerDocument) => {
-      if (error) res.status(500).json({ message: error });
-      res.json(manufacturerDocument);
+    const id = req.params.id;
+    const name = req.body.name;
+    if ((isEmpty(id)) || (isEmpty(name))) return res.status(400).json({ message: 'The id and name of the manufacturer can not be empty.' });
+
+    updateManufacturer(id, name, (error, manufacturerDocument) => {
+      if (error) return res.status(500).json({ message: error });
+      return res.json(manufacturerDocument);
     });
   },
 
   remove (req, res) {
     // deletes one manufacturer
-    removeManufacturer(req.params.id, (error, result) => {
-      if (error) res.status(500).json({ message: error });
-      res.json(result);
+    const id = req.params.id;
+    if (isEmpty(id)) return res.status(400).json({ message: 'The id of the manufacturer can not be empty.' });
+
+    removeManufacturer(id, (error, result) => {
+      if (error) return res.status(500).json({ message: error });
+      return res.json(result);
     });
   } ,
 };

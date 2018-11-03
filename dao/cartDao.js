@@ -9,7 +9,7 @@ const { buildProduct } = require('./productDao');
     concerning the shopping cart.
 ******************************************************/
 function getCart (getFullCart, callback) {
-  findOneAndUpdate({}, { expire: new Date()}, { upsert: true, new: true, setDefaultsOnInsert: true })
+  Cart.findOneAndUpdate({}, { expire: new Date()}, { upsert: true, new: true, setDefaultsOnInsert: true })
     .then(cart => {
       if (getFullCart === 'true') {
         buildFullCart(cart, (errorMessage, fullCart) => {
@@ -30,7 +30,7 @@ function insertUpdateItem (cartId, productId, productAmount, callback) {
     { $set: { 'items.$.amount' : productAmount } },
     { new: true },
     (error, cartDocument) => {
-      if (error) callback(`Failed to update the item in the cart! => ${error}`);
+      if (error) return callback(`Failed to update the item in the cart! => ${error}`);
       if (isEmpty(cartDocument)) {
         Cart.findOneAndUpdate(
           { _id: cartId },

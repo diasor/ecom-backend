@@ -34,8 +34,8 @@ function updateManufacturer (id, name, callback) {
     { $set: { 'name' : name } },
     { new: true },
     (error, manufacturerDocument) => {
-      if (error) callback(`Error updating manufacturer: ${name}. ERROR: ${error}`);
-      callback(undefined, manufacturerDocument);
+      if (error) return callback(`Error updating manufacturer: ${name}. ERROR: ${error}`);
+      return callback(undefined, manufacturerDocument);
     });
 };
 
